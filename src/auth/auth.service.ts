@@ -21,12 +21,12 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException();
     }
-    const payload = { sub: user.id, email: user.email };
+    const payload = { id: user.id, email: user.email };
     const accessToken = this.jwtService.sign(payload);
     return { accessToken };
   }
 
-  async signUp(email: string, password: string) {
+  async signUp(email: string, name: string, password: string) {
     const existingUser = await this.usersService.findOneByEmail(email);
     if (existingUser) {
       throw new UnauthorizedException('User already exists');
@@ -34,6 +34,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await this.usersService.create({
       email,
+      name,
       password: hashedPassword,
     });
     return newUser;
