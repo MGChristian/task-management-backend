@@ -19,6 +19,15 @@ export class TasksService {
     return this.tasksRepository.save(newTask);
   }
 
+  findAllAssigned(userId: number) {
+    return this.tasksRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.user', 'user')
+      .leftJoinAndSelect('task.project', 'project')
+      .where('task.userId = :userId', { userId })
+      .getMany();
+  }
+
   findAll(projectId?: number) {
     return this.tasksRepository.find({
       select: {
@@ -45,11 +54,9 @@ export class TasksService {
         description: true,
         status: true,
         user: { id: true, name: true, email: true },
-        project: { id: true, name: true },
       },
       relations: {
         user: true,
-        project: true,
       },
       where: { project: { id: projectId } },
     });
@@ -76,16 +83,17 @@ export class TasksService {
   update(id: number, updateTaskDto: UpdateTaskDto) {
     const { userId, projectId, ...updateData } = updateTaskDto;
 
+    const userIdToUpdate = userId ?? null;
+    const projectIdToUpdate = projectId ?? null;
+
     return this.tasksRepository.update(
       { id },
       {
         ...updateData,
-        user: {
-          id: userId,
-        },
-        project: {
-          id: projectId,
-        },
+        ...(userIdToUpdate !== null ? { user: { id: userIdToUpdate } } : {}),
+        ...(projectIdToUpdate !== null
+          ? { project: { id: projectIdToUpdate } }
+          : {}),
       },
     );
   }

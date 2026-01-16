@@ -9,6 +9,7 @@ import {
   ValidationPipe,
   UseGuards,
   ParseIntPipe,
+  Req,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -43,6 +44,18 @@ export class TasksController {
   @Get()
   findAll() {
     return this.tasksService.findAll();
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'List of assigned tasks retrieved successfully.',
+    type: [GetTaskDto],
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @Get('assigned')
+  findAllAssigned(@Req() req: Request) {
+    const userId: number = req['user'].id;
+    return this.tasksService.findAllAssigned(userId);
   }
 
   @ApiResponse({

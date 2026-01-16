@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Task } from 'src/tasks/entities/task.entity';
 
-export class GetProjectDto {
+export class GetOneProjectDto {
   @ApiProperty({
     example: 1,
     description: 'The ID of the project',
@@ -43,6 +44,20 @@ export class GetProjectDto {
     name: string;
     email: string;
   };
+
+  @ApiProperty({
+    example: [
+      {
+        id: 1,
+        title: 'Task Title',
+        description: 'This is a sample task description.',
+        status: 'IN_PROGRESS',
+        createdAt: '2024-01-01 12:00:00',
+      },
+    ],
+    description: 'The tasks associated with the project',
+  })
+  tasks: Task[];
 
   @ApiProperty({
     example: '2024-01-01 12:00:00',

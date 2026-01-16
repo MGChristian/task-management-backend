@@ -18,7 +18,7 @@ export class ProjectsService {
     return this.projectRepository.save(newProject);
   }
 
-  async findAll(userId: number) {
+  async findAll() {
     return this.projectRepository.find({
       select: {
         id: true,
@@ -26,6 +26,24 @@ export class ProjectsService {
         description: true,
         deadline: true,
         isCompleted: true,
+        createdAt: true,
+        user: { id: true, name: true, email: true },
+      },
+      relations: {
+        user: true,
+      },
+    });
+  }
+
+  async findAllByUser(userId: number) {
+    return this.projectRepository.find({
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        deadline: true,
+        isCompleted: true,
+        createdAt: true,
         user: { id: true, name: true, email: true },
       },
       relations: {
@@ -57,7 +75,10 @@ export class ProjectsService {
       relations: {
         user: true,
       },
-      where: { user: { id: userId } },
+      where: {
+        id: id,
+        user: { id: userId },
+      },
     });
   }
 

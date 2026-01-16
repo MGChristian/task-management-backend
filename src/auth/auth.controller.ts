@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { ApiResponse } from '@nestjs/swagger';
+import { GetUserDto } from 'src/users/dto/get-user-dto';
 
 @Controller('auth')
 export class AuthController {
@@ -18,7 +19,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'User logged in successfully.',
-    example: { token: 'jwt-token-string' },
+    example: { token: 'jwt-token-string', user: GetUserDto },
   })
   @ApiResponse({ status: 401, description: 'Invalid credentials.' })
   @Post('login')
@@ -30,13 +31,7 @@ export class AuthController {
   @ApiResponse({ status: 201, description: 'User signed up successfully.' })
   @ApiResponse({ status: 409, description: 'Email already in use.' })
   @Post('signup')
-  async signup(@Body(new ValidationPipe()) body: SignupDto) {
-    const newUser = await this.authService.signUp(
-      body.email,
-      body.name,
-      body.password,
-    );
-    const { password, ...result } = newUser;
-    return result;
+  signup(@Body(new ValidationPipe()) body: SignupDto) {
+    return this.authService.signUp(body.email, body.name, body.password);
   }
 }

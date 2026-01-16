@@ -29,14 +29,34 @@ export class GetTaskDto {
   status?: TaskStatus;
 
   @ApiProperty({
-    example: 1,
+    example: {
+      id: 1,
+      email: 'user@example.com',
+      name: 'User Name',
+    },
     description: 'The ID of the user associated with the task',
   })
-  userId: number;
+  user: {
+    id: number;
+    email: string;
+    name: string;
+  };
 
   @ApiProperty({
-    example: 1,
+    example: {
+      id: 1,
+      name: 'Project Name',
+    },
     description: 'The ID of the project associated with the task',
   })
-  projectId: number;
+  project: {
+    id: number;
+    name: string;
+  };
+
+  @ApiProperty({
+    example: '2024-01-01 12:00:00',
+    description: 'The creation date of the task',
+  })
+  createdAt: Date;
 }

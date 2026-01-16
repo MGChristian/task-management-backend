@@ -25,6 +25,9 @@ export class Project {
   @Column({ default: false })
   isCompleted: boolean;
 
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
   @ManyToOne(() => User, (user) => user.projects, { onDelete: 'CASCADE' })
   user: User;
 

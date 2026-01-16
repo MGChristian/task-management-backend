@@ -19,6 +19,7 @@ import { ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { GetProjectDto } from './dto/get-project.dto';
 import { TasksService } from 'src/tasks/tasks.service';
 import { GetTaskDto } from 'src/tasks/dto/get-task.dto';
+import { GetOneProjectDto } from './dto/get-one-project.dto';
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard)
@@ -51,9 +52,20 @@ export class ProjectsController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @Get()
-  findAll(@Req() req: Request) {
+  findAll() {
+    return this.projectsService.findAll();
+  }
+
+  @ApiResponse({
+    status: 200,
+    description: 'List of user projects retrieved successfully.',
+    type: [GetProjectDto],
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @Get('my-projects')
+  findAllByUser(@Req() req: Request) {
     const userId: number = req['user'].id;
-    return this.projectsService.findAll(userId);
+    return this.projectsService.findAllByUser(userId);
   }
 
   @ApiResponse({
@@ -71,14 +83,16 @@ export class ProjectsController {
   @ApiResponse({
     status: 200,
     description: 'Project retrieved successfully.',
-    type: GetProjectDto,
+    type: GetOneProjectDto,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
+  async findOne(@Param('id', ParseIntPipe) id: number, @Req() req: Request) {
     const userId: number = req['user'].id;
-    return this.projectsService.findOne(userId, id);
+    const project = await this.projectsService.findOne(userId, id);
+    const tasks = await this.tasksService.findAllByProject(id);
+    return { ...project, tasks };
   }
 
   @ApiResponse({
